@@ -29,14 +29,34 @@ i: an integer [0, n-1]
 returns: An key-value pair (Kj, Vj) such that Kj is an i’th smallest key.
 '''
 
+  
 
 def QuickSelect(arr, i):
     # Your code here
+    if len(arr) <= 1:
+        return arr[0]
+    
+    pivot_ind = get_random_index(arr)
+    pivot_elt = arr[pivot_ind, 0]
 
-    # Feel free to use get_random_index(arr) or get_random_int(start_inclusive, end_inclusive)
-    # ... see the helper functions below
-    pass
-    return (0, -1)
+    left = []
+    right = []
+    equal = []
+
+    for j in range(0, len(arr)-1):
+        if arr[j] < pivot_elt:
+            left.append(arr[j])
+        if arr[j] > pivot_elt:
+            right.append(arr[j])
+        if arr[j] == pivot_elt:
+            equal.append(arr[j])
+
+    if i < len(left):
+        return QuickSelect(left, i)
+    elif i >= len(left) + len(equal):
+        return QuickSelect(right, i - len(left) - len(equal))
+    else:
+        return equal[0]
 
 
 '''

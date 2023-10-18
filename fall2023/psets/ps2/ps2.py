@@ -61,7 +61,7 @@ class BinarySearchTree:
         if left_size > ind and self.left is not None:
             return self.left.select(ind)
         if left_size < ind and self.right is not None:
-            return self.right.select(ind)
+            return self.right.select(ind - (left_size + 1))
         return None
 
 
@@ -95,11 +95,12 @@ class BinarySearchTree:
             if self.left is None:
                 self.left = BinarySearchTree(self.debugger)
             self.left.insert(key)
+            self.size += 1
         elif self.key < key:
             if self.right is None:
                 self.right = BinarySearchTree(self.debugger)
             self.right.insert(key)
-        self.calculate_sizes()
+            self.size += 1
         return self
 
     
@@ -127,7 +128,47 @@ class BinarySearchTree:
        11 
     '''
     def rotate(self, direction, child_side):
-        # Your code goes here
+        # which child to perform rotate on
+        if child_side == "L":
+            child = self.left
+        else:
+            child = self.right
+        if not child:
+            return self
+        
+        # left rotation
+        if direction == "L":
+            # step 1 in my diagram
+            root = child.right
+            # step 2 in my diagram
+            child.right = root.left
+            # step 3 in diagram
+            root.left = child
+            # preserve size-augmentations
+            root.size = child.size
+            child.size = 1
+            if child.left:
+                child.size += child.left.size
+            if child.right:
+                child.size += child.right.size
+
+        elif direction == "R":
+            root = child.left
+            child.left = root.right
+            root.right = child
+            root.size = child.size
+            child.size = 1
+            if child.left:
+                child.size += child.left.size
+            if child.right:
+                child.size += child.right.size
+
+        # attaching rotated subtree back to self, i.e. the root node of T
+        if child_side == "L":
+            self.left = root
+        else:
+            self.right = root
+
         return self
 
     def print_bst(self):
