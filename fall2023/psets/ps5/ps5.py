@@ -130,8 +130,18 @@ def bfs_2_coloring(G, precolored_nodes=None):
     # TODO: Complete this function by implementing two-coloring using the colors 0 and 1.
     # If there is no valid coloring, reset all the colors to None using G.reset_colors()
     
-    G.reset_colors()
-    return None
+    for node in range(G.N):
+        if node not in visited:
+            G.colors[node] = 0
+
+            for nbr in G.edges[node]:
+                if G.colors[nbr] is None:
+                    G.colors[nbr] = 1
+                    visited.add(nbr)
+                elif G.colors[nbr] != 1:
+                    G.reset_colors()
+            
+    return G.colors
 
 '''
     Part B: Implement is_independent_set.
