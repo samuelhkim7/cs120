@@ -129,18 +129,29 @@ def bfs_2_coloring(G, precolored_nodes=None):
     
     # TODO: Complete this function by implementing two-coloring using the colors 0 and 1.
     # If there is no valid coloring, reset all the colors to None using G.reset_colors()
-    
-    for node in range(G.N):
-        if node not in visited:
-            G.colors[node] = 0
+    queue = []
 
-            for nbr in G.edges[node]:
+    for node in range(0, G.N):
+        if node not in visited:
+            visited.add(node)
+            G.colors[node] = 0
+            queue.append(node)
+
+        while len(queue) > 0:
+            curr_node = queue.pop(0)
+            neighbors = G.edges[curr_node]
+            for nbr in neighbors:
+                visited.add(nbr)
                 if G.colors[nbr] is None:
-                    G.colors[nbr] = 1
-                    visited.add(nbr)
-                elif G.colors[nbr] != 1:
+                    if G.colors[curr_node] == 0:
+                        G.colors[nbr] = 1
+                    else:
+                        G.colors[nbr] = 0
+                    queue.append(nbr)
+                elif G.colors[curr_node] == G.colors[nbr]:
                     G.reset_colors()
-            
+                    return None
+                  
     return G.colors
 
 '''
@@ -151,8 +162,13 @@ def bfs_2_coloring(G, precolored_nodes=None):
 # Checks if subset is an independent set in G 
 def is_independent_set(G, subset):
     # TODO: Complete this function
-
+    for node in subset:
+        for nbr in G.edges[node]:
+            if nbr in subset:
+                return False
+            
     return True
+
 
 '''
     Part C: Implement the 3-coloring algorithm from the sender receiver exercise.
@@ -180,8 +196,22 @@ def is_independent_set(G, subset):
 def iset_bfs_3_coloring(G):
     # TODO: Complete this function.
 
+    # Try all possible independent sets of nodes
+    for size in range(1, G.N + 1):
+        for independent_set_indices in combinations(range(G.N), size):
+            subset = list(independent_set_indices)
+
+            # Check if the independent set is indeed independent
+            if is_independent_set(G, subset):
+                # Try 2-coloring the independent set
+                result = bfs_2_coloring(G, subset)
+                if result is not None:
+                    return result
+
+    # If no valid coloring is found, reset all colors to None and return None
     G.reset_colors()
     return None
+
 
 # Feel free to add miscellaneous tests below!
 if __name__ == "__main__":
